@@ -1,0 +1,309 @@
+{
+  "residents": [
+    {
+      "id": "H7",
+      "delegate": "D7",
+      "initial_station": "S1",
+      "region": "north"
+    },
+    {
+      "id": "H8",
+      "delegate": "D8",
+      "initial_station": "S3",
+      "region": "east"
+    }
+  ],
+  "plans": [
+    {
+      "id": "P1",
+      "resident": "H7",
+      "referral": "C7",
+      "window_from": "09:00",
+      "window_to": "10:00",
+      "skill": "mobility",
+      "group": "g1",
+      "splittable": true,
+      "categories": [
+        "schedule",
+        "mobility"
+      ]
+    },
+    {
+      "id": "P2",
+      "resident": "H7",
+      "referral": "C7",
+      "window_from": "18:00",
+      "window_to": "19:00",
+      "skill": "mobility",
+      "group": "g2",
+      "splittable": false,
+      "categories": [
+        "schedule",
+        "mobility"
+      ]
+    },
+    {
+      "id": "P3",
+      "resident": "H7",
+      "referral": "C7",
+      "window_from": "18:00",
+      "window_to": "19:00",
+      "skill": "dressing",
+      "group": "g2",
+      "splittable": false,
+      "categories": [
+        "schedule",
+        "dressing"
+      ]
+    },
+    {
+      "id": "P4",
+      "resident": "H7",
+      "referral": "C8",
+      "window_from": "19:00",
+      "window_to": "20:00",
+      "skill": "mobility",
+      "group": "g3",
+      "splittable": true,
+      "categories": [
+        "schedule",
+        "mobility"
+      ]
+    },
+    {
+      "id": "P5",
+      "resident": "H8",
+      "referral": "C8",
+      "window_from": "17:30",
+      "window_to": "19:00",
+      "skill": "mobility",
+      "group": "g4",
+      "splittable": true,
+      "categories": [
+        "schedule",
+        "mobility"
+      ]
+    }
+  ],
+  "grants": [
+    {
+      "id": "G1",
+      "resident": "H7",
+      "station": "S2",
+      "purpose": "inquire",
+      "categories": [
+        "schedule"
+      ],
+      "issued": "08:00",
+      "expires": "21:00",
+      "revoked": null
+    },
+    {
+      "id": "G2",
+      "resident": "H7",
+      "station": "S2",
+      "purpose": "deliver",
+      "categories": [
+        "schedule",
+        "mobility"
+      ],
+      "issued": "11:00",
+      "expires": "22:00",
+      "revoked": "19:05"
+    },
+    {
+      "id": "G3",
+      "resident": "H7",
+      "station": "S1",
+      "purpose": "deliver",
+      "categories": [
+        "schedule",
+        "mobility",
+        "dressing"
+      ],
+      "issued": "07:00",
+      "expires": "23:00",
+      "revoked": null
+    },
+    {
+      "id": "G4",
+      "resident": "H7",
+      "station": "S3",
+      "purpose": "deliver",
+      "categories": [
+        "schedule",
+        "mobility"
+      ],
+      "issued": "16:00",
+      "expires": "23:00",
+      "revoked": null
+    }
+  ],
+  "staff": [
+    {
+      "id": "A7",
+      "station": "S2",
+      "skills": [
+        "mobility"
+      ],
+      "qualification_from": "08:00",
+      "qualification_to": "20:00",
+      "region": "north"
+    },
+    {
+      "id": "A8",
+      "station": "S1",
+      "skills": [
+        "mobility",
+        "dressing"
+      ],
+      "qualification_from": "08:00",
+      "qualification_to": "19:00",
+      "region": "north"
+    },
+    {
+      "id": "A9",
+      "station": "S3",
+      "skills": [
+        "mobility"
+      ],
+      "qualification_from": "08:00",
+      "qualification_to": "21:00",
+      "region": "east"
+    }
+  ],
+  "travel": [
+    {
+      "id": "T1",
+      "from_region": "east",
+      "to_region": "north",
+      "minutes": 25
+    },
+    {
+      "id": "T2",
+      "from_region": "north",
+      "to_region": "east",
+      "minutes": 25
+    },
+    {
+      "id": "T3",
+      "from_region": "north",
+      "to_region": "north",
+      "minutes": 10
+    }
+  ],
+  "handover": [
+    {
+      "id": "X1",
+      "plan": "P1",
+      "station_from": "S1",
+      "station_to": "S2",
+      "staff": "A7",
+      "proposed": "08:05",
+      "from_confirmed": "08:10",
+      "to_confirmed": null,
+      "service_start": "09:10",
+      "service_end": "09:40"
+    },
+    {
+      "id": "X2",
+      "plan": "P2",
+      "station_from": "S1",
+      "station_to": "S2",
+      "staff": "A7",
+      "proposed": "12:00",
+      "from_confirmed": null,
+      "to_confirmed": "13:00",
+      "service_start": "18:00",
+      "service_end": "18:45"
+    },
+    {
+      "id": "X3",
+      "plan": "P4",
+      "station_from": "S1",
+      "station_to": "S2",
+      "staff": "A7",
+      "proposed": "14:00",
+      "from_confirmed": "14:10",
+      "to_confirmed": "14:12",
+      "service_start": "19:00",
+      "service_end": "19:45"
+    },
+    {
+      "id": "X4",
+      "plan": "P4",
+      "station_from": "S2",
+      "station_to": "S3",
+      "staff": "A9",
+      "proposed": "19:06",
+      "from_confirmed": "19:10",
+      "to_confirmed": null,
+      "service_start": "19:10",
+      "service_end": "19:45"
+    },
+    {
+      "id": "X5",
+      "plan": "P5",
+      "station_from": "S3",
+      "station_to": "S3",
+      "staff": "A9",
+      "proposed": "10:00",
+      "from_confirmed": "10:01",
+      "to_confirmed": "10:02",
+      "service_start": "17:40",
+      "service_end": "19:00"
+    }
+  ],
+  "visits": [
+    {
+      "id": "V1",
+      "plan": "P4",
+      "station": "S2",
+      "staff": "A7",
+      "proof": "K1",
+      "start": "19:00",
+      "end": "19:04",
+      "received": "19:35"
+    },
+    {
+      "id": "V2",
+      "plan": "P4",
+      "station": "S1",
+      "staff": "A8",
+      "proof": "K1",
+      "start": "19:00",
+      "end": "19:04",
+      "received": "19:36"
+    },
+    {
+      "id": "V3",
+      "plan": "P4",
+      "station": "S2",
+      "staff": "A7",
+      "proof": "K2",
+      "start": "19:06",
+      "end": "19:10",
+      "received": "19:37"
+    }
+  ],
+  "proofs": [
+    {
+      "id": "K1",
+      "resident": "H7",
+      "issued": "19:00",
+      "station": "S2",
+      "staff": "A7",
+      "recorded_start": "19:00",
+      "recorded_end": "19:04"
+    },
+    {
+      "id": "K2",
+      "resident": "H7",
+      "issued": "19:06",
+      "station": "S2",
+      "staff": "A7",
+      "recorded_start": "19:06",
+      "recorded_end": "19:10"
+    }
+  ]
+}
