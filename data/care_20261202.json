@@ -263,6 +263,7 @@
       "proof": "K1",
       "start": "19:00",
       "end": "19:04",
+      "completed": true,
       "received": "19:35"
     },
     {
@@ -273,6 +274,7 @@
       "proof": "K1",
       "start": "19:00",
       "end": "19:04",
+      "completed": true,
       "received": "19:36"
     },
     {
@@ -283,6 +285,7 @@
       "proof": "K2",
       "start": "19:06",
       "end": "19:10",
+      "completed": false,
       "received": "19:37"
     }
   ],
