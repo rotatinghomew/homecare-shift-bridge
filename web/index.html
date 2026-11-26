@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>分段转介与到访交换 · 跨站照护交接台</title>
+<style>
+  :root{
+    --bg:#f4f6fa; --card:#fff; --line:#dde3ee; --ink:#1f2a44; --muted:#66708c;
+    --blue:#2456d6; --blue-bg:#eaf0ff; --green:#157f4b; --green-bg:#e6f6ee;
+    --amber:#9a6200; --amber-bg:#fff4d6; --red:#c0392b; --red-bg:#fdecea;
+    --purple:#6c3fc0; --purple-bg:#f0e9fd; --gray:#5b6478; --gray-bg:#eef1f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+       background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55}
+  header{background:#16234a;color:#fff;padding:14px 22px;display:flex;flex-wrap:wrap;
+         gap:12px;align-items:center;justify-content:space-between}
+  header h1{font-size:18px;margin:0;font-weight:700}
+  header .sub{opacity:.75;font-size:12px;margin-top:2px}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  select,input,button,textarea{font:inherit}
+  select,input[type=text],input[type=time],input[type=number]{
+    border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:#fff;color:var(--ink)}
+  button{border:1px solid var(--blue);background:var(--blue);color:#fff;border-radius:8px;
+         padding:7px 12px;cursor:pointer;font-weight:600}
+  button:hover{filter:brightness(1.06)}
+  button.ghost{background:#fff;color:var(--blue)}
+  button.sm{padding:4px 9px;font-size:12px;border-radius:7px}
+  button.green{background:var(--green);border-color:var(--green)}
+  button.amber{background:var(--amber);border-color:var(--amber)}
+  button.red{background:var(--red);border-color:var(--red)}
+  button.gray{background:var(--gray);border-color:var(--gray)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  nav.roles{display:flex;gap:6px;flex-wrap:wrap;padding:12px 22px 0}
+  nav.roles button{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:600}
+  nav.roles button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+  main{padding:16px 22px 60px;max-width:1280px;margin:0 auto}
+  .grid{display:grid;gap:14px}
+  .cols-2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;
+        box-shadow:0 1px 2px rgba(20,40,90,.05)}
+  .card h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card h3{font-size:13px;margin:14px 0 6px;color:var(--muted)}
+  .muted{color:var(--muted)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .between{justify-content:space-between}
+  .seg{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:#fcfdff}
+  .seg:last-child{margin-bottom:0}
+  .seg .title{font-weight:700;font-size:14px}
+  .kv{display:grid;grid-template-columns:88px 1fr;gap:2px 10px;margin:6px 0;font-size:13px}
+  .kv dt{color:var(--muted)} .kv dd{margin:0}
+  .badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 10px;
+         font-size:12px;font-weight:700;white-space:nowrap}
+  .b-green{background:var(--green-bg);color:var(--green)}
+  .b-blue{background:var(--blue-bg);color:var(--blue)}
+  .b-amber{background:var(--amber-bg);color:var(--amber)}
+  .b-red{background:var(--red-bg);color:var(--red)}
+  .b-purple{background:var(--purple-bg);color:var(--purple)}
+  .b-gray{background:var(--gray-bg);color:var(--gray)}
+  .todo{border-left:4px solid var(--amber);background:var(--amber-bg);border-radius:10px;
+        padding:10px 12px;margin-bottom:8px}
+  .proof{border:1px dashed var(--line);border-radius:10px;padding:10px;margin:8px 0}
+  .claim{border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--gray-bg)}
+  .claim.ok{background:var(--green-bg)} .claim.bad{background:var(--red-bg)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600}
+  .chips{display:flex;gap:5px;flex-wrap:wrap}
+  .chip{background:var(--gray-bg);border-radius:7px;padding:1px 8px;font-size:12px}
+  .chip.skill{background:var(--blue-bg);color:var(--blue)}
+  .chip.cat{background:var(--purple-bg);color:var(--purple)}
+  .toast{position:fixed;right:18px;bottom:18px;max-width:420px;z-index:50;display:flex;flex-direction:column;gap:8px}
+  .msg{padding:10px 14px;border-radius:10px;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:13px}
+  .msg.ok{background:var(--green)} .msg.err{background:var(--red)} .msg.info{background:#2b3a67}
+  pre.json{background:#0f1830;color:#cdd9ff;padding:10px;border-radius:10px;overflow:auto;
+           max-height:260px;font-size:11.5px}
+  details{margin-top:8px}
+  label.f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;align-items:end}
+  .stat{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .stat .n{font-size:20px;font-weight:800}
+  .stat .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 14px;min-width:96px}
+  .stat .l{font-size:12px;color:var(--muted)}
+  .hide{display:none}
+  .footnote{font-size:12px;color:var(--muted);margin-top:18px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>分段转介与到访交换 · 跨站居家照护交接台</h1>
+    <div class="sub">看护日 2026-12-02（UTC+8，时段右端不计）· 标准库后端 · 数据按当时授权与证据核对</div>
+  </div>
+  <div class="bar">
+    <label class="muted" style="color:#c6d0ee">模拟时刻</label>
+    <input type="text" id="clock" value="19:40" size="5" aria-label="模拟当前时刻 HH:MM" />
+    <button class="ghost" onclick="refresh()">刷新</button>
+  </div>
+</header>
+
+<nav class="roles" id="roles">
+  <button data-actor="D7" class="active">授权家属 D7（H7）</button>
+  <button data-actor="D8">家属 D8（H8）</button>
+  <button data-actor="S1">原站 S1</button>
+  <button data-actor="S2">接站 S2（晚班）</button>
+  <button data-actor="S3">站点 S3</button>
+  <button data-actor="duty">值班台</button>
+</nav>
+
+<main id="app"><div class="muted">加载中…</div></main>
+<div class="toast" id="toast"></div>
+
+<script>
+let actor = "D7";
+let lastBoard = null;
+
+// ---------- 基础 ----------
+function esc(v){ return String(v ?? "").replace(/[&<>"']/g, s => (
+  {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s])); }
+function at(){ return document.getElementById("clock").value.trim() || "19:40"; }
+async function api(path, opts={}){
+  const opt = {headers:{"Content-Type":"application/json"}, ...opts};
+  if(opt.body && typeof opt.body !== "string") opt.body = JSON.stringify(opt.body);
+  const res = await fetch(path + (path.includes("?")?"&":"?") + "_t=" + Date.now(), opt);
+  let data = null; try{ data = await res.json(); }catch(e){}
+  if(!res.ok || (data && data.ok === false)){
+    const msg = (data && (data.message || data.error || data.code)) || ("HTTP "+res.status);
+    throw Object.assign(new Error(msg), {data, status:res.status});
+  }
+  return data;
+}
+function toast(msg, kind="info"){
+  const box = document.getElementById("toast");
+  const el = document.createElement("div");
+  el.className = "msg " + kind; el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(()=>el.remove(), 5200);
+}
+async function act(path, body, okMsg){
+  try{ const d = await api(path, {method:"POST", body: body||{}});
+    toast(okMsg || "已办理", "ok"); refresh(); return d;
+  }catch(e){ toast("未办成：" + e.message, "err"); if(e.data) console.warn(e.data); throw e; }
+}
+function badge(text, cls){ return `<span class="badge b-${cls||"gray"}">${esc(text)}</span>`; }
+const TRIAGE_CLS = {fulfilled:"green", pending_verification:"amber", not_visited:"red",
+  searching:"blue", unassignable:"red", open:"purple"};
+const DUTY_CLS = {fulfilled:"green", pending_verification:"amber",
+  authorization_required:"amber", unassignable:"red", searching:"blue",
+  not_visited:"red", open:"purple", scheduled:"green"};
+
+document.querySelectorAll("#roles button").forEach(btn=>{
+  btn.onclick = ()=>{ actor = btn.dataset.actor;
+    document.querySelectorAll("#roles button").forEach(b=>b.classList.toggle("active", b===btn));
+    refresh(); };
+});
+
+async function refresh(){
+  const app = document.getElementById("app");
+  try{
+    lastBoard = await api(`/api/board?actor=${encodeURIComponent(actor)}&at=${encodeURIComponent(at())}`);
+    if(lastBoard.view === "duty") renderDuty(lastBoard);
+    else if(lastBoard.view === "station") renderStation(lastBoard);
+    else renderFamily(lastBoard);
+  }catch(e){ app.innerHTML = `<div class="card">加载失败：${esc(e.message)}</div>`; }
+}
+
+// ---------- 家属 / 住户 ----------
+function renderFamily(d){
+  const r = d.resident || {};
+  const segHtml = d.segments.map(segmentCardFamily).join("");
+  const perfHtml = d.performances.length ? d.performances.map(p=>`
+     <div class="seg">
+       <div class="row between">
+         <div class="title">${esc(p.start)}–${esc(p.end)} · 到户证明 ${esc(p.proof_id)}</div>
+         ${badge(p.state_label, p.state==="completed"?"green":"amber")}
+       </div>
+       <div class="muted" style="margin-top:4px">归属：${esc(p.station)} / ${esc(p.staff)}
+         · 关联段 ${esc((p.plan_ids||[]).join("、"))}</div>
+     </div>`).join("") : `<div class="muted">目前还没有可显示的到户记录。</div>`;
+  const todoHtml = d.todos.length ? d.todos.map(t=>`
+     <div class="todo">
+       <div class="row between">
+         <strong>📝 ${esc(t.action)}：${esc(t.station)}</strong>
+         ${badge(t.reason_code, "amber")}
+       </div>
+       <div style="margin:5px 0">${esc(t.message||"")}</div>
+       <div class="muted">时段 ${esc(t.window||"")} · 项目 ${esc((t.items||[]).join("、"))}
+         · 资料类别 ${esc((t.categories||[]).join("、"))}</div>
+       <div class="row" style="margin-top:8px">
+         <button class="sm amber" onclick='grantTodo(${JSON.stringify(t.prefill).replace(/'/g,"&#39;")}, "${esc(t.station)}", "${esc(d.resident.id)}")'>
+           我是${esc(d.delegate||"家属")}：补开此授权</button>
+       </div>
+     </div>`).join("") : `<div class="muted">暂无需要家属补办的事项。</div>`;
+
+  document.getElementById("app").innerHTML = `
+   <div class="stat">
+     <div class="box"><div class="n">${d.counts.segments}</div><div class="l">服务段/组</div></div>
+     <div class="box"><div class="n" style="color:var(--green)">${d.counts.fulfilled}</div><div class="l">已完成</div></div>
+     <div class="box"><div class="n" style="color:var(--amber)">${d.counts.pending_verification}</div><div class="l">到访待核对</div></div>
+     <div class="box"><div class="n" style="color:var(--red)">${d.counts.gaps}</div><div class="l">待落实/缺口</div></div>
+     <div class="box"><div class="n" style="color:var(--amber)">${d.counts.todos}</div><div class="l">待补办</div></div>
+   </div>
+   <div class="grid cols-2">
+     <section class="card"><h2>🏠 ${esc(r.id)}（授权家属 ${esc(d.delegate)} · 片区 ${esc(r.region)}）：哪段服务有人接</h2>${segHtml}</section>
+     <div class="grid">
+       <section class="card"><h2>✅ 哪段确实到访（同一次到户只显示一次）</h2>${perfHtml}</section>
+       <section class="card"><h2>📌 还需要我补办什么</h2>${todoHtml}</section>
+     </div>
+   </div>`;
+}
+function segmentCardFamily(s){
+  const dutyBadge = badge(s.duty_state_label || s.triage_label, DUTY_CLS[s.duty_state]||"gray");
+  const h = s.boundary;
+  const handover = h
+    ? `${badge("已确认边界 "+h.id, "green")} ${esc(h.station_from)}→${esc(h.station_to)} · ${esc(h.staff)} · ${esc(h.service_start)}–${esc(h.service_end)}`
+    : `${badge("未形成有效交接", "amber")} 责任仍在 ${esc(s.responsible_station)}`;
+  const otherH = (s.handovers||[]).filter(x=>!x.binding).map(x=>
+     `<div class="muted" style="font-size:12px">待生效单 ${esc(x.id)} ${esc(x.station_from)}→${esc(x.station_to)}
+       ${x.from_confirmed?"原站✓":"原站…"} / ${x.to_confirmed?"接站✓":"接站…"}
+       ${(x.evaluation_errors||[]).length? "· 检查未过："+esc(x.evaluation_errors.join(",")):""}</div>`).join("");
+  return `<div class="seg">
+    <div class="row between">
+      <div class="title">${esc(s.window_from)}–${esc(s.window_to)} · ${esc(s.plan_ids.join("+"))}
+        ${s.bundled?badge("同组须一次完成","purple"):badge("可拆项目","blue")}</div>
+      ${dutyBadge}
+    </div>
+    <div class="chips" style="margin:6px 0">
+      ${s.skills.map(x=>`<span class="chip skill">技能 ${esc(x)}</span>`).join("")}
+      ${s.categories.map(x=>`<span class="chip cat">${esc(x)}</span>`).join("")}
+    </div>
+    <div>${handover}</div>${otherH}
+  </div>`;
+}
+async function grantTodo(prefill, station, resident){
+  const body = {resident, station, purpose:prefill.purpose||"deliver",
+    categories:prefill.categories, issued:at(), expires: prompt("授权到期时刻 HH:MM：", prefill.expires||"23:59") || "23:59",
+    actor: lastBoard.delegate || actor, at: at()};
+  await act("/api/grants", body, `已为 ${station} 补开授权`);
+}
+
+// ---------- 站点 ----------
+function renderStation(d){
+  const inq = `
+   <section class="card">
+     <h2>🔎 初次询班（只见时段 / 片区 / 技能）</h2>
+     <div class="row">
+       <label class="f">住户<input type="text" id="inqResident" value="H7" size="6"/></label>
+       <button onclick="doInquire('${d.station}')">询班</button>
+     </div>
+     <div id="inqResult" class="muted" style="margin-top:8px">输入住户授权编号后查询；无 inquire/deliver 授权将被拒绝。</div>
+   </section>`;
+  const mat = `
+   <section class="card">
+     <h2>📂 接受服务后按授权取资料（用途·类别·有效期）</h2>
+     <div class="form-grid">
+       <label class="f">住户<input type="text" id="matResident" value="H7"/></label>
+       <label class="f">类别（逗号）<input type="text" id="matCats" value="schedule,mobility"/></label>
+       <button onclick="doMaterials('${d.station}')">取资料</button>
+       <button class="ghost" onclick="tryCategory('${d.station}','dressing')">试取 dressing（应被拒）</button>
+     </div>
+     <div id="matResult" style="margin-top:8px"></div>
+   </section>`;
+  const handovers = (d.handovers||[]).map(h=>{
+    const sideBtns = [];
+    if(!h.from_confirmed) sideBtns.push(`<button class="sm" onclick='confirmH("${h.id}","from")'>原站确认</button>`);
+    if(!h.to_confirmed) sideBtns.push(`<button class="sm green" onclick='confirmH("${h.id}","to")'>接站确认/接下</button>`);
+    sideBtns.push(`<button class="sm amber" onclick='reassignForm("${h.id}")'>临时改派</button>`);
+    const ev = h.evaluation||{};
+    return `<tr>
+      <td><b>${esc(h.id)}</b><div class="muted">${esc(h.plan)}</div></td>
+      <td>${esc(h.station_from)}→${esc(h.station_to)}<div class="muted">${esc(h.staff||"")} ${esc(h.service_start||"")}-${esc(h.service_end||"")}</div></td>
+      <td>${h.from_confirmed?badge("原站 "+h.from_confirmed,"green"):badge("原站未确","gray")}<br/>
+          ${h.to_confirmed?badge("接站 "+h.to_confirmed,"green"):badge("接站未接","amber")}</td>
+      <td>${h.binding?badge("有效边界/承诺","green"):badge("未生效","amber")}
+          ${h.superseded_by?badge("已由 "+h.superseded_by+" 取代","gray"):""}
+          ${(ev.errors||[]).length?`<div class="b-red badge" style="margin-top:4px">${esc(ev.errors.join(","))}</div>`:""}</td>
+      <td><div class="row">${sideBtns.join("")}</div></td>
+    </tr>`;
+  }).join("");
+  const staff = (d.staff||[]).map(s=>`<span class="chip">${esc(s.id)} · ${(s.skills||[]).join("/")} · 资质 ${esc(s.qualification_from)}–${esc(s.qualification_to)} · ${esc(s.region)}</span>`).join(" ");
+  const comm = (d.commitments||[]).map(c=>`<span class="chip">${esc(c.id)} ${esc(c.start)}-${esc(c.end)} 户${esc(c.resident)}(${esc(c.region)})</span>`).join(" ") || '<span class="muted">暂无有效承诺</span>';
+
+  document.getElementById("app").innerHTML = `
+   <div class="card" style="margin-bottom:14px">
+     <h2>🚉 站点 ${esc(d.station)} <span class="muted" style="font-weight:400">as of ${esc(d.as_of)}</span></h2>
+     <div class="chips">${staff}</div>
+     <h3>本站有效承诺日程（同时段不可再许另一户，相邻户还要过路程）</h3><div class="chips">${comm}</div>
+   </div>
+   <div class="grid cols-2">${inq}${mat}</div>
+   <section class="card" style="margin-top:14px">
+     <h2>🤝 交接边界与确认（两站答复凭据）</h2>
+     <table><thead><tr><th>单</th><th>边界/人/时段</th><th>确认</th><th>状态/检查</th><th>办理</th></tr></thead>
+     <tbody>${handovers}</tbody></table>
+   </section>
+   <section class="card" style="margin-top:14px">
+     <h2>📤 回传到访回执 / 补传回执（引用独立到户证明）</h2>
+     <div class="form-grid">
+       <label class="f">计划<input id="vPlan" value="P4"/></label>
+       <label class="f">站点<input id="vStation" value="${esc(d.station)}"/></label>
+       <label class="f">人员<input id="vStaff" value="A7"/></label>
+       <label class="f">证明号<input id="vProof" value="K1"/></label>
+       <label class="f">实际上门<input id="vStart" value="19:00"/></label>
+       <label class="f">实际离户<input id="vEnd" value="19:04"/></label>
+       <label class="f">上传时刻<input id="vReceived" value="19:35"/></label>
+       <label class="f">全部完成?
+         <select id="vCompleted"><option value="true">completed=true</option><option value="false">false</option></select></label>
+       <button onclick="uploadVisit()">上传/补传回执</button>
+     </div>
+     <div class="footnote">撤回后上传的迟到回执：授权核认以证明登记的“实际开始”为准；当时在授权与交接范围内且有见证，仍可认定撤回前履行，但不恢复之后的资料权限。</div>
+   </section>`;
+}
+async function doInquire(station){
+  const resident = document.getElementById("inqResident").value.trim();
+  try{ const d = await api(`/api/station/${station}/inquire?resident=${encodeURIComponent(resident)}&at=${encodeURIComponent(at())}`);
+    document.getElementById("inqResult").innerHTML =
+      `<div class="chips">`+d.shifts.map(s=>`<span class="chip">${esc(s.window_from)}–${esc(s.window_to)} · ${esc(s.region)} · ${s.skills.map(esc).join("/")} · ${(s.plan_ids||[]).join("+")}${s.bundled?" · 整组":""}</span>`).join("")+`</div>
+       <div class="footnote">返回字段仅时段/片区/技能与必要标识，无 categories 等资料类别。</div>`;
+  }catch(e){ const dd=e.data; document.getElementById("inqResult").innerHTML =
+    `<span style="color:var(--red)">拒绝：${esc(e.message)} ${dd? "("+esc(dd.code)+")":""}</span>`; }
+}
+async function tryCategory(station, cat){
+  document.getElementById("matCats").value = cat;
+  await doMaterials(station);
+}
+async function doMaterials(station){
+  const resident = document.getElementById("matResident").value.trim();
+  const cats = document.getElementById("matCats").value.trim();
+  try{ const d = await api(`/api/station/${station}/materials?resident=${encodeURIComponent(resident)}&categories=${encodeURIComponent(cats)}&at=${encodeURIComponent(at())}`);
+    document.getElementById("matResult").innerHTML = `<div style="color:var(--green);font-weight:700">允许取资料（授权 ${esc(d.grant_id)}）</div>`+
+      d.materials.map(m=>`<div class="claim ok"><b>${esc(m.title)}</b> <span class="muted">[${esc(m.category)}]</span><div class="muted">关联 ${esc((m.plan_ids||[]).join("、")||"无")}</div></div>`).join("");
+  }catch(e){ const dd=e.data||{}; document.getElementById("matResult").innerHTML =
+    `<div class="claim bad"><b style="color:var(--red)">拒绝：${esc(e.message)}</b><div class="muted">code=${esc(dd.code)}${dd.missing_categories&&dd.missing_categories.length?" · 缺类别 "+esc(dd.missing_categories.join(",")):""}</div></div>`; }
+}
+async function confirmH(id, side){
+  await act(`/api/handovers/${id}/confirm`, {side, at:at(), actor:actor}, `${id} ${side==="to"?"接站":"原站"}确认已记录`);
+}
+async function reassignForm(id){
+  const station_to = prompt("改派给哪个站（如 S3）？","S3"); if(!station_to) return;
+  const staff = prompt("新接人员工号（须具备全组资质且路程/时段可行）？","A9"); if(!staff) return;
+  const start = prompt("新预约开始 HH:MM？","19:10"); const end = prompt("新预约结束 HH:MM？","19:45");
+  await act(`/api/handovers/${id}/reassign`, {station_to,staff,start,end,at:at(),actor:actor},
+    "改派单已建；新人合格并接下前旧承诺仍有效");
+}
+async function uploadVisit(){
+  const v = id=>document.getElementById(id).value.trim();
+  await act("/api/visits", {plan:v("vPlan"), station:v("vStation"), staff:v("vStaff"),
+    proof:v("vProof"), start:v("vStart"), end:v("vEnd"), received:v("vReceived"),
+    completed: document.getElementById("vCompleted").value==="true", at:at()}, "回执已并入原段核对");
+}
+
+// ---------- 值班台 ----------
+function renderDuty(d){
+  const s = d.summary;
+  const gapCards = d.gaps.map(gapCard).join("");
+  const queue = d.attribution_queue.map(proofCard).join("") || '<div class="muted">暂无归属争议/待核证明。</div>';
+  const alerts = (d.alerts||[]).map(a=>`<tr><td>${badge(a.kind, a.kind.includes("visit")?"purple":"amber")}</td>
+     <td>${esc(a.handover_id||a.visit_id)}</td><td>${esc(a.plan||"")}</td>
+     <td>${esc(a.message||"")} ${a.evaluation_errors&&a.evaluation_errors.length?`<span class="chip">${esc(a.evaluation_errors.join(","))}</span>`:""}
+         ${a.codes?`<span class="chip">${esc(a.codes.join(","))}</span>`:""}
+         ${a.late_valid_note?`<div class="muted">${esc(a.late_valid_note)}</div>`:""}</td></tr>`).join("");
+  document.getElementById("app").innerHTML = `
+   <div class="stat">
+     ${statBox(s.segments,"分段/组","")} ${statBox(s.pending_verification,"履行待核","amber")}
+     ${statBox(s.not_visited,"根本没去","red")} ${statBox(s.searching,"还在找人","blue")}
+     ${statBox(s.unassignable,"没人能接","red")} ${statBox(s.authorization_required,"需补授权","amber")}
+     ${statBox(s.attribution_queue,"归属核对","purple")}
+   </div>
+   <section class="card" style="margin-bottom:14px">
+     <h2>⚖️ 同一次到户的双方证据核对（住户只计一次履行）</h2>${queue}
+   </section>
+   <section class="card" style="margin-bottom:14px">
+     <h2>🧩 具体缺的时段和项目 · 补派前三分流</h2>
+     <div class="grid cols-2">${gapCards}</div>
+   </section>
+   <section class="card" style="margin-bottom:14px">
+     <h2>📥 接收后来转介的新计划 / 报文（在原承诺上接着办）</h2>
+     <textarea id="ingestBox" rows="5" style="width:100%;font-family:ui-monospace,monospace;font-size:12px"
+       placeholder='{"plans":[{"id":"P6",...}],"grants":[...]}'></textarea>
+     <div class="row" style="margin-top:8px">
+       <button onclick="doIngest()">汇入报文</button>
+       <button class="ghost" onclick='document.getElementById("ingestBox").value=JSON.stringify({plans:[{id:"P6",resident:"H7",referral:"C9",window_from:"20:10",window_to:"20:40",skill:"mobility",group:"g6",splittable:true,categories:["schedule","mobility"]}]},null,2)'>填入示例新计划 P6</button>
+     </div>
+   </section>
+   <section class="card">
+     <h2>🚨 规则告警 / 凭据</h2>
+     <table><thead><tr><th>类型</th><th>记录</th><th>段</th><th>说明</th></tr></thead><tbody>${alerts}</tbody></table>
+   </section>`;
+}
+function statBox(n,l,cls){ return `<div class="box"><div class="n" style="color:var(--${cls==="red"?"red":cls==="amber"?"amber":cls==="blue"?"blue":cls==="purple"?"purple":"green"})">${n}</div><div class="l">${l}</div></div>`; }
+function gapCard(s){
+  const opts = (s.station_options||[]).map(o=>`<div class="row" style="margin:3px 0">
+      ${badge(o.station, o.can_take?"green":(o.schedulable?"amber":"gray"))}
+      <span class="muted" style="font-size:12px">${o.auth_allowed?"授权有效":"授权:"+o.authorization.code}
+        · ${o.eligible_staff.length? "可排 "+o.eligible_staff.join("/") : "无可行人员"}
+        ${o.can_take?" · 可承接":(o.schedulable&&!o.auth_allowed?" · 被授权卡住":"")}</span>
+    </div>`).join("");
+  let actions = "";
+  if(s.triage==="pending_verification"){
+    actions = `<span class="muted">请在上方“证据核对”处理，先不要补派，避免同段算两次。</span>`;
+  }else if(s.duty_state==="authorization_required" && s.authorization_action){
+    const a=s.authorization_action;
+    actions = `<button class="sm amber" onclick='dutyGrant(${JSON.stringify(a).replace(/'/g,"&#39;")}, "${s.resident}")'>登记家属已为 ${esc(a.station)} 补授权</button>
+      <span class="muted">${esc(a.message||"")}</span>`;
+  }else{
+    actions = `
+      <button class="sm blue" onclick='openDispatch("${s.resident}","${s.unit_key}")'>还在找人：登记寻找中</button>
+      <button class="sm red" onclick='noShow("${s.resident}","${s.unit_key}")'>核实根本没去</button>
+      ${s.responsible_station?`<button class="sm ghost" onclick='quickPropose("${s.resident}","${s.unit_key}","${s.responsible_station}")'>给责任站 ${esc(s.responsible_station)} 派工…</button>`:""}`;
+  }
+  return `<div class="seg">
+    <div class="row between">
+      <div class="title">${esc(s.resident)} · ${esc(s.window_from)}–${esc(s.window_to)} · ${esc(s.plan_ids.join("+"))}
+        ${s.bundled?badge("整组一次","purple"):""}</div>
+      ${badge(s.duty_state_label||s.triage_label, DUTY_CLS[s.duty_state]||TRIAGE_CLS[s.triage]||"gray")}
+    </div>
+    <div class="chips" style="margin:6px 0">${s.skills.map(x=>`<span class="chip skill">${esc(x)}</span>`).join("")}
+      ${s.categories.map(x=>`<span class="chip cat">${esc(x)}</span>`).join("")}
+      <span class="chip">片区 ${esc(s.region)}</span></div>
+    <div>${opts}</div>
+    <div class="row" style="margin-top:8px">${actions}</div>
+  </div>`;
+}
+function proofCard(q){
+  const claims = q.claims.map(c=>`<div class="claim ${c.valid_completion?"ok":(c.consistent_with_proof?"":"bad")}">
+     <div class="row between"><b>回执 ${esc(c.visit_id)} · ${esc(c.station)}/${esc(c.staff)}</b>
+       ${c.valid_completion?badge("可认定履行","green"):badge("不可直接计入","amber")}</div>
+     <div class="muted" style="font-size:12px">上传 ${esc(c.received)} · completed=${c.completed}
+       · 与证明一致=${c.consistent_with_proof} · 申报方授权(${esc(c.claim_auth_code_at_start)})
+       · 申报方范围=${c.claim_in_handover_scope}
+       ${c.late_valid? " · <b>迟到回执但实际开始在授权期内</b>":""}
+       ${(c.issues||[]).length?" · 归属方资质问题 "+esc(c.issues.join(",")):""}
+       ${(c.claim_issues||[]).length?" · 申报方资质 "+esc(c.claim_issues.join(",")):""}
+     </div></div>`).join("");
+  const rec=q.recommendation||{};
+  const decided = q.adjudication ? badge("已判定："+q.adjudication.outcome+" → "+q.adjudication.station+"/"+q.adjudication.staff,"green") : "";
+  return `<div class="proof">
+    <div class="row between">
+      <b>证明 ${esc(q.proof_id)} · 户 ${esc(q.resident)} · 登记 ${esc(q.recorded_start)}–${esc(q.recorded_end)}</b>
+      <span>${q.conflict?badge("两站同报一次到户","red"):badge(q.state,"gray")} ${decided}</span>
+    </div>
+    <div class="muted" style="margin:4px 0">中立登记：${esc(q.neutral_attribution.station)}/${esc(q.neutral_attribution.staff)}
+      ｜建议：${esc(rec.visit_id||"")} ${esc(rec.basis||"")}</div>
+    ${claims}
+    ${q.adjudication?"":`<div class="row" style="margin-top:6px">
+      <button class="sm green" onclick='adjudicate("${q.proof_id}","confirmed","${esc(q.neutral_attribution.station||"S2")}","${esc(q.neutral_attribution.staff||"A7")}")'>采纳中立证明，确认一次履行</button>
+      <button class="sm red" onclick='adjudicate("${q.proof_id}","rejected")'>驳回（不计履行）</button>
+    </div>`}
+  </div>`;
+}
+async function adjudicate(pid, outcome, station, staff){
+  await act("/api/adjudications", {proof_id:pid, outcome, station, staff, at:at(), actor:"duty"},
+    outcome==="confirmed"?"已确认归属，住户端只显示一次":"已驳回");
+}
+async function dutyGrant(a, resident){
+  await act("/api/grants", {resident, station:a.station, purpose:"deliver",
+    categories:(a.missing_categories&&a.missing_categories.length?a.missing_categories:a.categories),
+    issued:at(), expires:"23:59", actor:"duty", at:at()}, "已登记家属补授权");
+}
+async function openDispatch(resident, unit_key){
+  await act("/api/dispatch", {resident, unit_key, at:at(), actor:"duty"}, "已登记为“还在找人”");
+}
+async function noShow(resident, unit_key){
+  if(!confirm("核实过登记端/站点，确认该户根本没去？")) return;
+  await act("/api/no-shows", {resident, unit_key, at:at(), actor:"duty"}, "已记录根本没去，可安排补派");
+}
+async function quickPropose(resident, unit_key, station){
+  const staff=prompt("人员工号？","A8"); if(!staff) return;
+  const start=prompt("开始 HH:MM？","09:10"); const end=prompt("结束 HH:MM？","09:40");
+  await act("/api/handovers",{resident,unit_key,station_to:station,staff,start,end,at:at(),actor:"duty",station_from:station,confirm_from:true},"派工/交接单已建，待接站确认");
+}
+async function doIngest(){
+  const txt=document.getElementById("ingestBox").value.trim();
+  if(!txt) return;
+  let packet; try{ packet=JSON.parse(txt); }catch(e){ toast("JSON 解析失败："+e.message,"err"); return; }
+  await act("/api/ingest", packet, "报文已汇入，原承诺视图已续算");
+}
+
+refresh();
+setInterval(()=>{ if(!document.hidden) refresh(); }, 15000);
+</script>
+</body>
+</html>
